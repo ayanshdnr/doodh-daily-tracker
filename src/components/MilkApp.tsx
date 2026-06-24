@@ -315,6 +315,17 @@ function DayRow({ date, qty, rate, onChange }: { date: string; qty: number; rate
               </button>
             ))}
           </div>
+          <div className="grid grid-cols-4 gap-1.5">
+            {[0.25, 0.5, 0.75, 1].map((q) => (
+              <button
+                key={`sub-${q}`}
+                onClick={() => onChange(Math.max(0, Math.round((qty - q) * 100) / 100))}
+                className="h-11 rounded-lg border-2 border-destructive/30 bg-destructive/5 text-destructive text-sm font-semibold active:scale-95"
+              >
+                −{q}
+              </button>
+            ))}
+          </div>
           <button
             onClick={() => { onChange(0); setOpen(false); }}
             className="w-full h-10 rounded-lg border-2 border-destructive/30 text-destructive text-sm font-medium"
