@@ -164,6 +164,20 @@ function Dashboard({ email, onLogout }: { email: string; onLogout: () => void })
                       </button>
                     ))}
                   </div>
+                  <Label className="text-sm font-medium mb-2 mt-4 block text-destructive">गलती से ज़्यादा हो गया तो घटाएँ</Label>
+                  <div className="grid grid-cols-4 gap-2">
+                    {[0.25, 0.5, 0.75, 1].map((q) => (
+                      <button
+                        key={`sub-${q}`}
+                        onClick={() => subtractToday(q)}
+                        className="h-16 rounded-xl border-2 border-destructive/30 bg-destructive/5 hover:border-destructive/60 active:scale-95 transition-all flex flex-col items-center justify-center text-destructive"
+                      >
+                        <span className="text-xs">−</span>
+                        <span className="text-lg font-bold leading-none">{q}</span>
+                        <span className="text-[10px] mt-1">लीटर</span>
+                      </button>
+                    ))}
+                  </div>
                   <Button onClick={resetToday} variant="outline" className="w-full mt-3 h-11">
                     रीसेट करें (0 / दूध नहीं आया)
                   </Button>
