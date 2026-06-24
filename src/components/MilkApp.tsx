@@ -282,18 +282,28 @@ function DayRow({ date, qty, rate, onChange }: { date: string; qty: number; rate
         <span className="text-xs text-primary font-medium">{open ? "बंद" : "बदलें"}</span>
       </button>
       {open && (
-        <div className="grid grid-cols-5 gap-1.5 mt-3">
-          {QTY_OPTIONS.map((q) => (
-            <button
-              key={q}
-              onClick={() => { onChange(q); setOpen(false); }}
-              className={`h-11 rounded-lg border-2 text-sm font-semibold ${qty === q ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card"}`}
-            >
-              {q === 0 ? "0" : q}
-            </button>
-          ))}
+        <div className="mt-3 space-y-2">
+          <div className="text-xs text-muted-foreground">कुल: <span className="font-semibold text-foreground">{qty} L</span></div>
+          <div className="grid grid-cols-4 gap-1.5">
+            {[0.25, 0.5, 0.75, 1].map((q) => (
+              <button
+                key={q}
+                onClick={() => onChange(Math.min(20, Math.round((qty + q) * 100) / 100))}
+                className="h-11 rounded-lg border-2 border-border bg-card text-sm font-semibold active:scale-95"
+              >
+                +{q}
+              </button>
+            ))}
+          </div>
+          <button
+            onClick={() => { onChange(0); setOpen(false); }}
+            className="w-full h-10 rounded-lg border-2 border-destructive/30 text-destructive text-sm font-medium"
+          >
+            रीसेट (0)
+          </button>
         </div>
       )}
+
     </div>
   );
 }
