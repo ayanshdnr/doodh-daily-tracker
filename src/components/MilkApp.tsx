@@ -87,16 +87,23 @@ function Dashboard({ email, onLogout }: { email: string; onLogout: () => void })
 
   const monthData = useMemo(() => { void tick; return getMonthData(year, month0); }, [year, month0, tick]);
 
-  function saveToday(qty: number) {
-    setEntry(today, qty);
+  function addToday(addQty: number) {
+    const next = Math.min(20, Math.round((todayQty + addQty) * 100) / 100);
+    setEntry(today, next);
     setTick((t) => t + 1);
-    toast.success(qty === 0 ? "आज दूध नहीं आया दर्ज किया" : `आज ${qty} लीटर दर्ज किया`);
+    toast.success(`+${addQty} L जोड़ा · कुल ${next} L`);
+  }
+  function resetToday() {
+    setEntry(today, 0);
+    setTick((t) => t + 1);
+    toast.success("आज का हिसाब रीसेट किया");
   }
 
   function saveDate(date: string, qty: number) {
     setEntry(date, qty);
     setTick((t) => t + 1);
   }
+
 
   return (
     <div className="min-h-screen pb-24" style={{ background: "var(--gradient-surface)" }}>
@@ -132,32 +139,34 @@ function Dashboard({ email, onLogout }: { email: string; onLogout: () => void })
                 <p className="text-xl font-bold mt-0.5">{formatDateHindi(today)}</p>
               </div>
               <CardContent className="pt-5 space-y-4">
+                <div className="rounded-xl border-2 border-primary/30 bg-primary/5 p-4 text-center">
+                  <p className="text-xs text-muted-foreground">आज कुल दूध</p>
+                  <p className="text-4xl font-bold text-primary mt-1">{todayQty} <span className="text-lg font-medium">लीटर</span></p>
+                </div>
                 <div>
-                  <Label className="text-sm font-medium mb-3 block">आज कितना दूध आया?</Label>
-                  <div className="grid grid-cols-5 gap-2">
-                    {QTY_OPTIONS.map((q) => {
-                      const active = todayQty === q;
-                      return (
-                        <button
-                          key={q}
-                          onClick={() => saveToday(q)}
-                          className={`h-20 rounded-xl border-2 flex flex-col items-center justify-center transition-all ${
-                            active
-                              ? "border-primary bg-primary text-primary-foreground shadow-[var(--shadow-card)] scale-[1.03]"
-                              : "border-border bg-card hover:border-primary/50"
-                          }`}
-                        >
-                          <span className="text-lg font-bold leading-none">{q === 0 ? "0" : q}</span>
-                          <span className="text-[10px] mt-1 opacity-80">{q === 0 ? "नहीं" : "लीटर"}</span>
-                        </button>
-                      );
-                    })}
+                  <Label className="text-sm font-medium mb-3 block">मात्रा जोड़ें (एक से ज़्यादा बार दबा सकते हैं)</Label>
+                  <div className="grid grid-cols-4 gap-2">
+                    {[0.25, 0.5, 0.75, 1].map((q) => (
+                      <button
+                        key={q}
+                        onClick={() => addToday(q)}
+                        className="h-20 rounded-xl border-2 border-border bg-card hover:border-primary/60 active:scale-95 transition-all flex flex-col items-center justify-center"
+                      >
+                        <span className="text-xs text-muted-foreground">+</span>
+                        <span className="text-lg font-bold leading-none">{q}</span>
+                        <span className="text-[10px] mt-1 text-muted-foreground">लीटर</span>
+                      </button>
+                    ))}
                   </div>
+                  <Button onClick={resetToday} variant="outline" className="w-full mt-3 h-11">
+                    रीसेट करें (0 / दूध नहीं आया)
+                  </Button>
                 </div>
                 <div className="flex items-center justify-between bg-muted rounded-xl px-4 py-3">
                   <span className="text-sm text-muted-foreground">आज का खर्च</span>
                   <span className="font-bold text-lg flex items-center"><IndianRupee className="w-4 h-4" />{(todayQty * rate).toFixed(2)}</span>
                 </div>
+
               </CardContent>
             </Card>
 
@@ -273,18 +282,28 @@ function DayRow({ date, qty, rate, onChange }: { date: string; qty: number; rate
         <span className="text-xs text-primary font-medium">{open ? "बंद" : "बदलें"}</span>
       </button>
       {open && (
-        <div className="grid grid-cols-5 gap-1.5 mt-3">
-          {QTY_OPTIONS.map((q) => (
-            <button
-              key={q}
-              onClick={() => { onChange(q); setOpen(false); }}
-              className={`h-11 rounded-lg border-2 text-sm font-semibold ${qty === q ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card"}`}
-            >
-              {q === 0 ? "0" : q}
-            </button>
-          ))}
+        <div className="mt-3 space-y-2">
+          <div className="text-xs text-muted-foreground">कुल: <span className="font-semibold text-foreground">{qty} L</span></div>
+          <div className="grid grid-cols-4 gap-1.5">
+            {[0.25, 0.5, 0.75, 1].map((q) => (
+              <button
+                key={q}
+                onClick={() => onChange(Math.min(20, Math.round((qty + q) * 100) / 100))}
+                className="h-11 rounded-lg border-2 border-border bg-card text-sm font-semibold active:scale-95"
+              >
+                +{q}
+              </button>
+            ))}
+          </div>
+          <button
+            onClick={() => { onChange(0); setOpen(false); }}
+            className="w-full h-10 rounded-lg border-2 border-destructive/30 text-destructive text-sm font-medium"
+          >
+            रीसेट (0)
+          </button>
         </div>
       )}
+
     </div>
   );
 }
