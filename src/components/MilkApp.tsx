@@ -93,6 +93,12 @@ function Dashboard({ email, onLogout }: { email: string; onLogout: () => void })
     setTick((t) => t + 1);
     toast.success(`+${addQty} L जोड़ा · कुल ${next} L`);
   }
+  function subtractToday(subQty: number) {
+    const next = Math.max(0, Math.round((todayQty - subQty) * 100) / 100);
+    setEntry(today, next);
+    setTick((t) => t + 1);
+    toast.success(`−${subQty} L घटाया · कुल ${next} L`);
+  }
   function resetToday() {
     setEntry(today, 0);
     setTick((t) => t + 1);
@@ -155,6 +161,20 @@ function Dashboard({ email, onLogout }: { email: string; onLogout: () => void })
                         <span className="text-xs text-muted-foreground">+</span>
                         <span className="text-lg font-bold leading-none">{q}</span>
                         <span className="text-[10px] mt-1 text-muted-foreground">लीटर</span>
+                      </button>
+                    ))}
+                  </div>
+                  <Label className="text-sm font-medium mb-2 mt-4 block text-destructive">गलती से ज़्यादा हो गया तो घटाएँ</Label>
+                  <div className="grid grid-cols-4 gap-2">
+                    {[0.25, 0.5, 0.75, 1].map((q) => (
+                      <button
+                        key={`sub-${q}`}
+                        onClick={() => subtractToday(q)}
+                        className="h-16 rounded-xl border-2 border-destructive/30 bg-destructive/5 hover:border-destructive/60 active:scale-95 transition-all flex flex-col items-center justify-center text-destructive"
+                      >
+                        <span className="text-xs">−</span>
+                        <span className="text-lg font-bold leading-none">{q}</span>
+                        <span className="text-[10px] mt-1">लीटर</span>
                       </button>
                     ))}
                   </div>
@@ -292,6 +312,17 @@ function DayRow({ date, qty, rate, onChange }: { date: string; qty: number; rate
                 className="h-11 rounded-lg border-2 border-border bg-card text-sm font-semibold active:scale-95"
               >
                 +{q}
+              </button>
+            ))}
+          </div>
+          <div className="grid grid-cols-4 gap-1.5">
+            {[0.25, 0.5, 0.75, 1].map((q) => (
+              <button
+                key={`sub-${q}`}
+                onClick={() => onChange(Math.max(0, Math.round((qty - q) * 100) / 100))}
+                className="h-11 rounded-lg border-2 border-destructive/30 bg-destructive/5 text-destructive text-sm font-semibold active:scale-95"
+              >
+                −{q}
               </button>
             ))}
           </div>
