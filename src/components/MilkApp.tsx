@@ -87,16 +87,23 @@ function Dashboard({ email, onLogout }: { email: string; onLogout: () => void })
 
   const monthData = useMemo(() => { void tick; return getMonthData(year, month0); }, [year, month0, tick]);
 
-  function saveToday(qty: number) {
-    setEntry(today, qty);
+  function addToday(addQty: number) {
+    const next = Math.min(20, Math.round((todayQty + addQty) * 100) / 100);
+    setEntry(today, next);
     setTick((t) => t + 1);
-    toast.success(qty === 0 ? "आज दूध नहीं आया दर्ज किया" : `आज ${qty} लीटर दर्ज किया`);
+    toast.success(`+${addQty} L जोड़ा · कुल ${next} L`);
+  }
+  function resetToday() {
+    setEntry(today, 0);
+    setTick((t) => t + 1);
+    toast.success("आज का हिसाब रीसेट किया");
   }
 
   function saveDate(date: string, qty: number) {
     setEntry(date, qty);
     setTick((t) => t + 1);
   }
+
 
   return (
     <div className="min-h-screen pb-24" style={{ background: "var(--gradient-surface)" }}>
