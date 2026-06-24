@@ -93,6 +93,12 @@ function Dashboard({ email, onLogout }: { email: string; onLogout: () => void })
     setTick((t) => t + 1);
     toast.success(`+${addQty} L जोड़ा · कुल ${next} L`);
   }
+  function subtractToday(subQty: number) {
+    const next = Math.max(0, Math.round((todayQty - subQty) * 100) / 100);
+    setEntry(today, next);
+    setTick((t) => t + 1);
+    toast.success(`−${subQty} L घटाया · कुल ${next} L`);
+  }
   function resetToday() {
     setEntry(today, 0);
     setTick((t) => t + 1);
